@@ -13,6 +13,12 @@ public class Jugador {
 
     private String posicion;
 
+    public Jugador(){}
+
+    public Jugador(String nombre, String posicion){
+        this.setNombre(nombre);
+        this.setPosicion(posicion);
+    }
 
     public String getNombre() {
         return nombre;
