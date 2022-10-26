@@ -16,8 +16,7 @@ public class PersistentObject {
     private EntityManager em;
 
     public MySession getSession(){
-        //obtener sesion creada previamente
-        return new MySession();
+       return new MySession(1, 1);
     }
 
     public <T> T load(long key, Class clazz){
@@ -26,7 +25,8 @@ public class PersistentObject {
     }
 
     public void createSession(long key, int ttl){
-        //crear sesion para luego recuperarla
+        MySession session = new MySession(key, ttl);
+        em.persist(session);
     }
 
     public void store(long key, Object object) {

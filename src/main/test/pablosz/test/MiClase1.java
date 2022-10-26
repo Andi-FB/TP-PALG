@@ -1,5 +1,8 @@
 package pablosz.test;
 
+import pablosz.ann.NotPersistable;
+import pablosz.ann.Persistable;
+
 @Persistable
 public class MiClase1 extends MiClase1Base
 {
