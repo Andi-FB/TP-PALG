@@ -10,6 +10,9 @@ public class PersistentObjectDTO {
         this.setData(data);
     }
 
+    public PersistentObjectDTO(){
+    }
+
     public String getClazz() {
         return clazz;
     }

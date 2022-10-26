@@ -1,34 +1,46 @@
 package pablosz.app;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import pablosz.app.domain.Jugador;
 import pablosz.app.domain.MySession;
 import pablosz.app.domain.PersistentObjectDTO;
-
-import java.lang.reflect.Field;
+import javax.persistence.EntityManager;
 
 public class PersistentObject {
+
+    private Gson gson = new GsonBuilder().create();
+
+    @Autowired
+    private EntityManager em;
 
     public MySession getSession(){
         //obtener sesion creada previamente
         return new MySession();
     }
 
-    public void createNewSession(){
+    public <T> T load(long key, Class clazz){
+
+        return (clazz.cast(new Jugador())) ;
+    }
+
+    public void createSession(long key, int ttl){
         //crear sesion para luego recuperarla
     }
 
-    public void store(Object object) throws IllegalAccessException {
-        /**Aca debemos guardar en una tabla nuestro objeto, con la clase
-         *
-         */
+    public void store(long key, Object object) {
 
-        for (Field field : object.getClass().getDeclaredFields()) {
-            field.setAccessible(true); // You might want to set modifier to public first.
-            Object value = field.get(object);
-            if (value != null) {
-                System.out.println(field.getName() + "=" + value);
-            }
-        }
-//        new PersistentObjectDTO(object.getClass().toString(), object.);
+        PersistentObjectDTO po = new PersistentObjectDTO();
+        po.setData(this.gson.toJson(object));
+        po.setClazz(object.getClass().getName());
+
+//        em.
+
+    }
+
+    public void destroySession(long key){
+
     }
 
 }
