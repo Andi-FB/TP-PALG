@@ -40,6 +40,7 @@ public class PersistentObject {
     public void destroySession(long key) {
         MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.mykey = :value1")
                 .setParameter("value1", key).getSingleResult();
+        entity.getParameters().forEach(x -> em.remove(x));
         em.remove(entity);
     }
 
