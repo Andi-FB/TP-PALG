@@ -1,10 +1,7 @@
 package pablosz.app.domain;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +12,8 @@ public class MySession {
     private long mykey;
     @Column(name="ttl")
     private int ttl; //time to live
-    @Transient
-    private List<Object> parameters;
+    @OneToMany(mappedBy = "mysession")
+    private List<PersistentObjectDTO> parameters;
 
 
     public MySession(long key, int ttl){
@@ -44,18 +41,18 @@ public class MySession {
         this.ttl = ttl;
     }
 
-    public List<Object> getParameters() {
+    public List<PersistentObjectDTO> getParameters() {
         if(this.parameters == null){
             this.parameters = new ArrayList<>();
         }
         return parameters;
     }
 
-    public void setParameters(List<Object> parameters) {
+    public void setParameters(List<PersistentObjectDTO> parameters) {
         this.parameters = parameters;
     }
 
-    public void addParameter(Object parameter) {
+    public void addParameter(PersistentObjectDTO parameter) {
         if(this.parameters == null){
             this.parameters = new ArrayList<>();
         }

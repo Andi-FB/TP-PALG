@@ -32,8 +32,9 @@ public class PersistentObject {
                 .setParameter("value1", key).getSingleResult();
 
         if(entity == null) throw new RuntimeException();
-
-        entity.addParameter(object);
+        PersistentObjectDTO persistentObjectDTO = new PersistentObjectDTO(entity, object.getClass().toString(), object.toString());
+        //entity.addParameter(persistentObjectDTO);
+        em.persist(persistentObjectDTO);
     }
 
     public void destroySession(long key) {
@@ -48,10 +49,10 @@ public class PersistentObject {
 
         if(entity == null) return null;
 
-        if(entity.getParameters().stream().filter(x -> x.getClass() == clazz).findFirst().isEmpty())
+        if(entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.toString())).findFirst().isEmpty())
             return null;
         else
-            return entity.getParameters().stream().filter(x -> x.getClass() == clazz).findFirst().get();
+            return clazz.cast(entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.toString())).findFirst().get().getData());
     }
 
     public void remove(long key, Class clazz) {
