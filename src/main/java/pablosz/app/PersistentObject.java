@@ -3,15 +3,18 @@ package pablosz.app;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pablosz.app.domain.Jugador;
 import pablosz.app.domain.MySession;
 import pablosz.app.domain.PersistentObjectDTO;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-@Repository
+@Component
+@Transactional
 public class PersistentObject {
 
     private Gson gson = new GsonBuilder().create();
@@ -25,28 +28,38 @@ public class PersistentObject {
     }
 
     public void store(long key, Object object) {
-        MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.key = :value1")
+        MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.mykey = :value1")
                 .setParameter("value1", key).getSingleResult();
+
+        if(entity == null) throw new RuntimeException();
+
         entity.addParameter(object);
     }
 
     public void destroySession(long key) {
-        MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.key = :value1")
+        MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.mykey = :value1")
                 .setParameter("value1", key).getSingleResult();
         em.remove(entity);
     }
 
     public Object load(long key, Class clazz) {
-        MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.key = :value1")
+        MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.mykey = :value1")
                 .setParameter("value1", key).getSingleResult();
-        return entity.getParameters().stream().filter(x -> x.getClass() == clazz).findFirst().get();
+
+        if(entity == null) return null;
+
+        if(entity.getParameters().stream().filter(x -> x.getClass() == clazz).findFirst().isEmpty())
+            return null;
+        else
+            return entity.getParameters().stream().filter(x -> x.getClass() == clazz).findFirst().get();
     }
 
     public void remove(long key, Class clazz) {
-        MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.key = :value1")
+        MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.mykey = :value1")
                 .setParameter("value1", key).getSingleResult();
 
-        Object parameter = entity.getParameters().stream().filter(x -> x.getClass() == clazz).findFirst().get();
+        Object parameter = entity.getParameters().stream().filter(x -> x.getClass() == clazz).findFirst();
+        if(parameter == null) throw new RuntimeException();
         entity.getParameters().remove(parameter);
     }
 /*

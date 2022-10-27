@@ -11,8 +11,8 @@ import java.util.List;
 @Entity()
 public class MySession {
     @Id
-    @Column(name="key")
-    private long key;
+    @Column(name="mykey")
+    private long mykey;
     @Column(name="ttl")
     private int ttl; //time to live
     @Transient
@@ -20,7 +20,7 @@ public class MySession {
 
 
     public MySession(long key, int ttl){
-        this.key = key;
+        this.mykey = key;
         this.ttl = ttl;
     }
 
@@ -28,12 +28,12 @@ public class MySession {
 
     }
 
-    public long getKey() {
-        return key;
+    public long getMykey() {
+        return mykey;
     }
 
-    public void setKey(long key) {
-        this.key = key;
+    public void setMykey(long key) {
+        this.mykey = key;
     }
 
     public int getTtl() {
@@ -45,6 +45,9 @@ public class MySession {
     }
 
     public List<Object> getParameters() {
+        if(this.parameters == null){
+            this.parameters = new ArrayList<>();
+        }
         return parameters;
     }
 
