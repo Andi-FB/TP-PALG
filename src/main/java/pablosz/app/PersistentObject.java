@@ -31,7 +31,6 @@ public class PersistentObject {
 
         if(entity == null) throw new RuntimeException();
         PersistentObjectDTO persistentObjectDTO = new PersistentObjectDTO(entity, object.getClass().getName(), object.toString());
-        //entity.addParameter(persistentObjectDTO);
         em.persist(persistentObjectDTO);
     }
 
@@ -74,8 +73,7 @@ public class PersistentObject {
 
         PersistentObjectDTO parameter = entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().orElse(null);
         if(parameter == null) throw new RuntimeException();
-        entity.removeParameter(parameter);
-        em.persist(entity);
+        em.remove(parameter);
     }
 /*
     public MySession getSession(){

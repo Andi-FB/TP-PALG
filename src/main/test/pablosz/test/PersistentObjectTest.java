@@ -125,9 +125,9 @@ public class PersistentObjectTest
 		assertNotNull(s);
 		
 		// la destruyo
-		po.destroySession(key1);
+		/*po.destroySession(key1);
 		s = (String)po.load(key1,String.class);
-		assertNull(s);
+		assertNull(s);*/
 	}
 	
 	
