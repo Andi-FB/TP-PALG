@@ -32,7 +32,7 @@ public class PersistentObject {
                 .setParameter("value1", key).getSingleResult();
 
         if(entity == null) throw new RuntimeException();
-        PersistentObjectDTO persistentObjectDTO = new PersistentObjectDTO(entity, object.getClass().toString(), object.toString());
+        PersistentObjectDTO persistentObjectDTO = new PersistentObjectDTO(entity, object.getClass().getName(), object.toString());
         //entity.addParameter(persistentObjectDTO);
         em.persist(persistentObjectDTO);
     }
@@ -45,15 +45,24 @@ public class PersistentObject {
     }
 
     public Object load(long key, Class clazz) {
-        MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.mykey = :value1")
-                .setParameter("value1", key).getSingleResult();
+        Object result = null;
+        try{
+            MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.mykey = :value1")
+                    .setParameter("value1", key).getSingleResult();
 
-        if(entity == null) return null;
+            if(entity == null) return null;
 
-        if(entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.toString())).findFirst().isEmpty())
-            return null;
-        else
-            return clazz.cast(entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.toString())).findFirst().get().getData());
+            if(!entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().isEmpty()){
+                PersistentObjectDTO persistentObjectDTO = entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().get();
+                Class<?> theClass = Class.forName(persistentObjectDTO.getClazz());
+
+                result = theClass.cast(persistentObjectDTO.getData());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public void remove(long key, Class clazz) {
