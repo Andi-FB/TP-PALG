@@ -7,9 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pablosz.app.domain.MySession;
 import pablosz.app.domain.PersistentObjectDTO;
-import java.lang.reflect.Constructor;
-
 import javax.persistence.EntityManager;
+import java.lang.reflect.Constructor;
 
 @Component
 @Transactional
@@ -35,10 +34,14 @@ public class PersistentObject {
     }
 
     public void destroySession(long key) {
-        MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.mykey = :value1")
-                .setParameter("value1", key).getSingleResult();
-        entity.getParameters().forEach(x -> em.remove(x));
-        em.remove(entity);
+        try {
+            MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.mykey = :value1")
+                    .setParameter("value1", key).getSingleResult();
+            entity.getParameters().forEach(x -> em.remove(x));
+            em.remove(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Object load(long key, Class clazz) {

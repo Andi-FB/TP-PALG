@@ -1,18 +1,17 @@
 package pablosz.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import pablosz.app.Application;
 import pablosz.app.PersistentObject;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(classes=Application.class)
 public class PersistentObjectTest
@@ -125,9 +124,9 @@ public class PersistentObjectTest
 		assertNotNull(s);
 		
 		// la destruyo
-		/*po.destroySession(key1);
+		po.destroySession(key1);
 		s = (String)po.load(key1,String.class);
-		assertNull(s);*/
+		assertNull(s);
 	}
 	
 	
