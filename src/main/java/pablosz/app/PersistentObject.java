@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pablosz.app.domain.MySession;
 import pablosz.app.domain.PersistentObjectDTO;
+
 import javax.persistence.EntityManager;
-import java.lang.reflect.Constructor;
 
 @Component
 @Transactional
@@ -54,14 +54,20 @@ public class PersistentObject {
 
             if(!entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().isEmpty()){
                 PersistentObjectDTO persistentObjectDTO = entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().get();
-                Class<?> theClass = Class.forName(persistentObjectDTO.getClazz());
+//                Class<?> theClass = Class.forName(persistentObjectDTO.getClazz());
+//
+//                //result = theClass.cast(persistentObjectDTO.getData());
+//                Constructor<?> cons =
+//                        (Constructor<?>) theClass.getConstructor(new Class<?>[]{String.class});
+//                Object object = (Object) cons.newInstance(new Object[]{persistentObjectDTO.getData()});
 
-                //result = theClass.cast(persistentObjectDTO.getData());
-                Constructor<?> cons =
-                        (Constructor<?>) theClass.getConstructor(new Class<?>[]{String.class});
-                Object object = (Object) cons.newInstance(new Object[]{persistentObjectDTO.getData()});
-
-                result = object;
+                switch (persistentObjectDTO.getClazz()) {
+                    case "java.lang.String":
+                        return persistentObjectDTO.getData();
+                    case "java.lang.Integer":
+                        return Integer.parseInt(persistentObjectDTO.getData());
+                }
+                
             }
         }catch (Exception e){
             e.printStackTrace();
