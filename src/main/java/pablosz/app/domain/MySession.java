@@ -58,4 +58,11 @@ public class MySession {
         }
         this.parameters.add(parameter);
     }
+
+    public void removeParameter(PersistentObjectDTO parameter) {
+        if(this.parameters == null){
+            return;
+        }
+        this.parameters.remove(parameter);
+    }
 }

@@ -4,14 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pablosz.app.domain.Jugador;
 import pablosz.app.domain.MySession;
 import pablosz.app.domain.PersistentObjectDTO;
+import java.lang.reflect.Constructor;
+
 import javax.persistence.EntityManager;
-import java.util.List;
 
 @Component
 @Transactional
@@ -56,7 +54,12 @@ public class PersistentObject {
                 PersistentObjectDTO persistentObjectDTO = entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().get();
                 Class<?> theClass = Class.forName(persistentObjectDTO.getClazz());
 
-                result = theClass.cast(persistentObjectDTO.getData());
+                //result = theClass.cast(persistentObjectDTO.getData());
+                Constructor<?> cons =
+                        (Constructor<?>) theClass.getConstructor(new Class<?>[]{String.class});
+                Object object = (Object) cons.newInstance(new Object[]{persistentObjectDTO.getData()});
+
+                result = object;
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -69,9 +72,10 @@ public class PersistentObject {
         MySession entity = (MySession) em.createQuery("SELECT t FROM MySession t where t.mykey = :value1")
                 .setParameter("value1", key).getSingleResult();
 
-        Object parameter = entity.getParameters().stream().filter(x -> x.getClass() == clazz).findFirst();
+        PersistentObjectDTO parameter = entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().orElse(null);
         if(parameter == null) throw new RuntimeException();
-        entity.getParameters().remove(parameter);
+        entity.removeParameter(parameter);
+        em.persist(entity);
     }
 /*
     public MySession getSession(){
