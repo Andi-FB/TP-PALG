@@ -4,14 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pablosz.app.domain.Jugador;
 import pablosz.app.domain.MySession;
 import pablosz.app.domain.PersistentObjectDTO;
+
 import javax.persistence.EntityManager;
-import java.util.List;
+import java.util.Optional;
 
 @Component
 @Transactional
@@ -52,11 +50,17 @@ public class PersistentObject {
 
             if(entity == null) return null;
 
-            if(!entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().isEmpty()){
-                PersistentObjectDTO persistentObjectDTO = entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().get();
-                Class<?> theClass = Class.forName(persistentObjectDTO.getClazz());
+            Optional<PersistentObjectDTO> ent = entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst();
+            if(!ent.isEmpty()){
+                PersistentObjectDTO persistentObjectDTO = ent.get();
 
-                result = theClass.cast(persistentObjectDTO.getData());
+                switch (persistentObjectDTO.getClazz()) {
+                    case "java.lang.String":
+                        return persistentObjectDTO.getData();
+                    case "java.lang.Integer":
+                        return Integer.parseInt(persistentObjectDTO.getData());
+                }
+
             }
         }catch (Exception e){
             e.printStackTrace();
