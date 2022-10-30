@@ -7,14 +7,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pablosz.app.domain.MySession;
 import pablosz.app.domain.PersistentObjectDTO;
+import pablosz.app.gson.config.MyExclusionStrategy;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @Transactional
 public class PersistentObject {
 
-    private Gson gson = new GsonBuilder().create();
+    private Gson gson = new GsonBuilder().addSerializationExclusionStrategy(new MyExclusionStrategy()).create();
+
+    private static final Set<String> primitiveTypes = new HashSet<>(
+            Arrays.asList("java.lang.String", "java.lang.Integer", "java.lang.Double") // Agregar los "primitivos"
+    );
+
 
     @Autowired
     private EntityManager em;
@@ -29,7 +38,14 @@ public class PersistentObject {
                 .setParameter("value1", key).getSingleResult();
 
         if(entity == null) throw new RuntimeException();
-        PersistentObjectDTO persistentObjectDTO = new PersistentObjectDTO(entity, object.getClass().getName(), object.toString());
+        PersistentObjectDTO persistentObjectDTO;
+
+        if (primitiveTypes.contains(object.getClass().getName())){
+            persistentObjectDTO = new PersistentObjectDTO(entity, object.getClass().getName(), object.toString());
+        }else {
+            persistentObjectDTO = new PersistentObjectDTO(entity, object.getClass().getName(), gson.toJson(object));
+        }
+
         em.persist(persistentObjectDTO);
     }
 
@@ -66,8 +82,10 @@ public class PersistentObject {
                         return persistentObjectDTO.getData();
                     case "java.lang.Integer":
                         return Integer.parseInt(persistentObjectDTO.getData());
+                    default:
+                        return gson.fromJson(persistentObjectDTO.getData(), clazz);
                 }
-                
+
             }
         }catch (Exception e){
             e.printStackTrace();
