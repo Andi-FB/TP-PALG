@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
 
 
 // +---------------------------------------------------------+
@@ -16,8 +18,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 // | explicitamente cada uno de estos descomenando las       |
 // | siguientes lineas: @ComponentScan y @EntityScan         |
 // +---------------------------------------------------------+
-// @ComponentScan(basePackages={"pablosz.pkgcomponentes1,pablosz.pkgcomponentes2,etc..."})
-// @EntityScan(basePackages={"pablosz.pkgdomain1,pkgpablosz.domain2,etc"})
+@ComponentScan(basePackages={"pablosz.app"})
+@EntityScan(basePackages={"pablosz.app,pablosz.app.domain"})
 
 @SpringBootApplication
 public class Application implements CommandLineRunner
