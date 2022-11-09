@@ -11,12 +11,12 @@ public class MySession {
     @Column(name="mykey")
     private long mykey;
     @Column(name="ttl")
-    private int ttl; //time to live
+    private long ttl; //time to live
     @OneToMany(mappedBy = "mysession")
     private List<PersistentObjectDTO> parameters;
 
 
-    public MySession(long key, int ttl){
+    public MySession(long key, long ttl){
         this.mykey = key;
         this.ttl = ttl;
     }
@@ -33,7 +33,7 @@ public class MySession {
         this.mykey = key;
     }
 
-    public int getTtl() {
+    public long getTtl() {
         return ttl;
     }
 

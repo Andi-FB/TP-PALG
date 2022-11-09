@@ -28,7 +28,7 @@ public class PersistentObject {
     @Autowired
     private EntityManager em;
 
-    public void createSession(long key, int ttl) {
+    public void createSession(long key, long ttl) {
         MySession session = new MySession(key, ttl);
         em.persist(session);
     }
@@ -70,12 +70,6 @@ public class PersistentObject {
 
             if(!entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().isEmpty()){
                 PersistentObjectDTO persistentObjectDTO = entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().get();
-//                Class<?> theClass = Class.forName(persistentObjectDTO.getClazz());
-//
-//                //result = theClass.cast(persistentObjectDTO.getData());
-//                Constructor<?> cons =
-//                        (Constructor<?>) theClass.getConstructor(new Class<?>[]{String.class});
-//                Object object = (Object) cons.newInstance(new Object[]{persistentObjectDTO.getData()});
 
                 switch (persistentObjectDTO.getClazz()) {
                     case "java.lang.String":
@@ -102,33 +96,5 @@ public class PersistentObject {
         if(parameter == null) throw new RuntimeException();
         em.remove(parameter);
     }
-/*
-    public MySession getSession(){
-       return new MySession(1, 1);
-    }
 
-    public <T> T load(long key, Class clazz){
-
-        return (clazz.cast(new Jugador())) ;
-    }
-
-    public void createSession(long key, int ttl){
-        MySession session = new MySession(key, ttl);
-        em.persist(session);
-    }
-
-    public void store(long key, Object object) {
-
-        PersistentObjectDTO po = new PersistentObjectDTO();
-        po.setData(this.gson.toJson(object));
-        po.setClazz(object.getClass().getName());
-
-//        em.
-
-    }
-
-    public void destroySession(long key){
-
-    }
-*/
 }
