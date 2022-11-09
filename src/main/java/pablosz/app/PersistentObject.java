@@ -20,6 +20,8 @@ public class PersistentObject {
 
     private Gson gson = new GsonBuilder().addSerializationExclusionStrategy(new MyExclusionStrategy()).create();
 
+    private SessionListener listener;
+
     private static final Set<String> primitiveTypes = new HashSet<>(
             Arrays.asList("java.lang.String", "java.lang.Integer", "java.lang.Double") // Agregar los "primitivos"
     );
@@ -30,6 +32,7 @@ public class PersistentObject {
 
     public void createSession(long key, long ttl) {
         MySession session = new MySession(key, ttl);
+        listener.sessionOpened(key);
         em.persist(session);
     }
 
@@ -95,6 +98,14 @@ public class PersistentObject {
         PersistentObjectDTO parameter = entity.getParameters().stream().filter(x -> x.getClazz().equals(clazz.getName())).findFirst().orElse(null);
         if(parameter == null) throw new RuntimeException();
         em.remove(parameter);
+    }
+
+    public void addListener(SessionListener listener){
+        this.listener = listener;
+    }
+
+    public void removeListener(SessionListener listener){
+        this.listener = null;
     }
 
 }

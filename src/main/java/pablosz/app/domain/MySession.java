@@ -2,6 +2,7 @@ package pablosz.app.domain;
 
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,8 @@ public class MySession {
     private long mykey;
     @Column(name="ttl")
     private long ttl; //time to live
+    @Column(name="date_created")
+    private LocalDateTime dateCreated;
     @OneToMany(mappedBy = "mysession")
     private List<PersistentObjectDTO> parameters;
 
@@ -19,6 +22,7 @@ public class MySession {
     public MySession(long key, long ttl){
         this.mykey = key;
         this.ttl = ttl;
+        this.dateCreated = LocalDateTime.now();
     }
 
     public MySession() {
@@ -39,6 +43,10 @@ public class MySession {
 
     public void setTtl(int ttl) {
         this.ttl = ttl;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
     }
 
     public List<PersistentObjectDTO> getParameters() {
