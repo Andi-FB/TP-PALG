@@ -36,7 +36,6 @@ public class SessionListenerTest implements SessionListener
 		po.addListener(this); // UPDATE: Registrar Listener para que funcione el test
 		po.createSession(key1,timeOut1);
 		po.createSession(key2,timeOut2);
-		esperar(loopThread); // UPDATE: Espera para que el listener llegue a registrar la apertura de sessions
 	}
 
 	@AfterEach
@@ -57,7 +56,7 @@ public class SessionListenerTest implements SessionListener
 		assertTrue(session1Opened==1);
 		assertTrue(session2Opened==1);
 
-		esperar((timeOut1/2)+loopThread*2);
+		esperar((timeOut1/2)+(timeOut1/2));
 		assertTrue(session1Opened==0);
 		assertTrue(session2Opened==1);
 
@@ -78,16 +77,16 @@ public class SessionListenerTest implements SessionListener
 
 		long acum = 0;
 
-		// UPDATE: Se cambian algunos tiempos para respetar el loop del listener
-		while( acum<(timeOut2-loopThread) )
+		while( acum<(timeOut2 - loopThread) )
 		{
-			// UPDATE: espero, aun debe estar abierta
-			esperar(loopThread); // UPDATE: Elimino el *100, ya que causaba que en la primer vuelta se expire la session
 
-			i++;
+
 			assertTrue(session2StillOpened==i);
+			i++;
 
-			acum+=loopThread+100;
+			esperar(loopThread+100);
+
+			acum+=loopThread ;
 		}
 
 		esperar(loopThread); // UPDATE: espero un loop más, para que se cierre la session
@@ -95,8 +94,13 @@ public class SessionListenerTest implements SessionListener
 		assertTrue(session2Opened==0);
 
 		// espero un loop, debe seguir en closed
-		esperar(loopThread+100);
-		assertTrue(session2StillOpened==i-1);
+		esperar(loopThread);
+
+		System.out.println("SESS2: " + session2StillOpened);
+		System.out.println("I: " + i);
+
+		assertTrue(session2StillOpened==i);
+
 	}
 
 	@Override
@@ -110,9 +114,13 @@ public class SessionListenerTest implements SessionListener
 		{
 			case k1:
 				session1Opened++;
+				System.out.println(session1Opened);
+
 				break;
 			case k2:
 				session2Opened++;
+				System.out.println(session2Opened);
+
 				break;
 		}
 	}
@@ -128,9 +136,12 @@ public class SessionListenerTest implements SessionListener
 		{
 			case k1:
 				session1StillOpened++;
+				System.out.println(session1StillOpened);
 				break;
 			case k2:
 				session2StillOpened++;
+				System.out.println(session2StillOpened);
+
 				break;
 		}
 	}
@@ -146,10 +157,15 @@ public class SessionListenerTest implements SessionListener
 		switch( k )
 		{
 			case k1:
-				session1Opened--; // UPDATE: cambio el ++ por --, ya que el stillClosed debería decrementar este contador
+				session1Opened--;
+				System.out.println(session1Opened);
+				// UPDATE: cambio el ++ por --, ya que el stillClosed debería decrementar este contador
 				break;
 			case k2:
-				session2Opened--; // UPDATE: cambio el ++ por --, ya que el stillClosed debería decrementar este contador
+				session2Opened--;
+				System.out.println(session2Opened);
+
+				// UPDATE: cambio el ++ por --, ya que el stillClosed debería decrementar este contador
 				break;
 		}
 	}
@@ -165,9 +181,12 @@ public class SessionListenerTest implements SessionListener
 		{
 			case k1:
 				session1StillOpened--;
+				System.out.println(session1StillOpened);
 				break;
 			case k2:
 				session2StillOpened--;
+				System.out.println(session2StillOpened);
+
 				break;
 		}
 	}

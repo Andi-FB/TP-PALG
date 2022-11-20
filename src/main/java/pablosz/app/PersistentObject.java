@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pablosz.app.domain.MySession;
 import pablosz.app.domain.PersistentObjectDTO;
+import pablosz.app.gson.config.Listener;
 import pablosz.app.gson.config.MyExclusionStrategy;
 
 import javax.persistence.EntityManager;
@@ -20,7 +21,7 @@ public class PersistentObject {
 
     private Gson gson = new GsonBuilder().addSerializationExclusionStrategy(new MyExclusionStrategy()).create();
 
-    private SessionListener listener;
+    private Listener listener;
 
     private static final Set<String> primitiveTypes = new HashSet<>(
             Arrays.asList("java.lang.String", "java.lang.Integer", "java.lang.Double") // Agregar los "primitivos"
@@ -32,8 +33,12 @@ public class PersistentObject {
 
     public void createSession(long key, long ttl) {
         MySession session = new MySession(key, ttl);
-        listener.sessionOpened(key);
         em.persist(session);
+        if(listener != null) {
+            listener.createSession(ttl, key);
+            new Thread(listener).start();
+            listener = new Listener(listener.getListener());
+        }
     }
 
     public void store(long key, Object object) {
@@ -100,8 +105,9 @@ public class PersistentObject {
         em.remove(parameter);
     }
 
-    public void addListener(SessionListener listener){
-        this.listener = listener;
+    public void addListener(SessionListener listen){
+        this.listener = new Listener(listen);
+
     }
 
     public void removeListener(SessionListener listener){
